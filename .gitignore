@@ -1,0 +1,23 @@
+# Logs
+logs
+*.log
+
+# scala / intellij ignores
+lib-cov
+*.seed
+*.log
+*.dat
+*.out
+*.pid
+*.gz
+
+pids
+logs
+results
+
+target/
+
+# intellij ignores
+.idea
+*.iml
+.idea_modules

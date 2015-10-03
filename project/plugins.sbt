@@ -1,0 +1,1 @@
+addSbtPlugin("io.sysa" % "sbt-rundeck" % "0.1.0")
