@@ -1,11 +1,32 @@
 language: scala
+
 scala:
-   - 2.11.7
+- 2.11.7
+
+script: sbt compile package
+
 branches:
   only:
-    - master
+  - master
+  - /^v.*$/
+
 jdk:
-  - oraclejdk8
-  - oraclejdk7
+- oraclejdk8
+- oraclejdk7
+
 notifications:
   email: false
+
+before_deploy:
+  - export DEPLOY_FILE=$(ls ./target/scala-2.11/rundeck-openstack-plugin-*.jar)
+  - echo "deploying $DEPLOY_FILE to GitHub releases"
+
+deploy:
+  provider: releases
+  api_key:
+    secure: ILOtHuI4CoKmUAWHFvV52crPAiXNcYGuyrTX7KkWnn3kGIVsi0PD77C9sGFkQqXx2vt8ShqQIYh4PTFgn1rB7eOqRcPVGsnJmGNsoIWh20GFBu5Hzi02Z2MnI39DZsnK25WnmYZFSuUFP1l4S2Lgu4ib3D3Xs0MPXUJE+g36gWSUwFGvO97/Z0HOEtiYl/toVcNV4Ws65BqWu5vd97L0fHMD/0ShIPxnbyKSdd5YsdNmK8EED88UtZwDBaD72OGsBp4kX0BM/+kO2JdtL/9WHc2gJRZj4Tj1axTvNsefgm8nQ+ZpVUiQ9GuTfH/IPU8fxaVuiX7XDSYaRcdWAqfBrG8pzZZ+iYIcvISyfUwK4V0FvZnjRGsPQf4GcLajpEh5Eent22MnRfLuVC5Whm6xa39sqMsYFGz/3m4qo9GBdcIsY2XXQvtgwRflEn7v6Gw17h33v02BwddvUJpcU1lf06FRIUBQ+y1nwMWJ06/2Z/8wU5CppFy08hdTHiu2cu2NmiP+pkZKC200fCCpmJ8rEFQuDJsa5CpinYiZ4XTQMZLcJc9h4fdkxsF/lea9F3bnKi66jhgitMwz1Mn0DZ1QmYAyU1AB3PZW6zBj8WPAtRLNEGMD3Os6SQZsVHtc1IEr+nTxRRVO76zjzkhluOIwNyVUxtvvYqY4lgbsPxReOQE=
+  file: ${DEPLOY_FILE}
+  skip_cleanup: true
+  on:
+    tags: true
+    jdk: oraclejdk8

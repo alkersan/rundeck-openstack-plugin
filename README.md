@@ -1,14 +1,12 @@
 # rundeck-openstack-plugin
-
 [![Build Status](https://img.shields.io/travis/alkersan/rundeck-openstack-plugin/master.svg?style=flat-square)](https://travis-ci.org/alkersan/rundeck-openstack-plugin)
 
-Rundeck Plugin | &nbsp;
----- | ----
-Service type: | `ResourceModelSource`
+Rundeck Plugin   | &nbsp;
+---------------- | ----
+Service type:    | `ResourceModelSource`
 Rundeck version: | 2.5+
-Version: | 1.0.0
-Description: | Obtains nodes from OpenStack compute service
-
+Version:         | 1.0.0
+Description:     | Obtains nodes from OpenStack compute service
 
 ### Setup
 Download [plugin](https://github.com/alkersan/rundeck-openstack-plugin/releases) jar and put it to `$RDECK_BASE/libext`
