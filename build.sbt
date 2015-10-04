@@ -5,11 +5,13 @@ lazy val root = project.in(file("."))
 		organization := "io.sysa",
 		version := "1.0.0",
 		scalaVersion := "2.11.7",
+		scalacOptions += "-target:jvm-1.7",
 
 		libraryDependencies ++= Seq(
 			"org.apache.jclouds.api" % "openstack-nova" % "1.9.1",
 			"com.google.code.findbugs" % "jsr305" % "3.0.0"
 		),
 
-		rundeckPluginClassnames := Seq("sysa.OpenstackResourceModelSourceFactory")
+		rundeckPluginClassnames := Seq("sysa.OpenstackResourceModelSourceFactory"),
+		rundeckLibraryVersion := "2.5.3"
 	)
