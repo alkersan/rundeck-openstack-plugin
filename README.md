@@ -1,4 +1,6 @@
 # rundeck-openstack-plugin
+
+[![Join the chat at https://gitter.im/alkersan/rundeck-openstack-plugin](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/alkersan/rundeck-openstack-plugin?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![Build Status](https://img.shields.io/travis/alkersan/rundeck-openstack-plugin/master.svg?style=flat-square)](https://travis-ci.org/alkersan/rundeck-openstack-plugin)
 
 Rundeck Plugin   | &nbsp;
