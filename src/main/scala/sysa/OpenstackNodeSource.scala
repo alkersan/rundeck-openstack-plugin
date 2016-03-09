@@ -77,6 +77,11 @@ class OpenstackNodeSource(val settings: OpenstackSettings) extends AbstractSched
 							node.setAttribute("os_instance", server.getId)
 							node.setAttribute("os_region", region)
 							node.setAttribute("os_status", server.getStatus.toString)
+							if (server.getMetadata.contains("tags")) {
+								val tags_map = server.getMetadata.toMap
+								val tags = tags_map("tags").toString.split(",").map(_.trim())
+								node.setTags(setAsJavaSet(tags.toSet))
+							}
 							server.getMetadata.foreach { case (k, v) => node.setAttribute(k, v) }
 							newNodeSet.putNode(node)
 
