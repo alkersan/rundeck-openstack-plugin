@@ -7,11 +7,11 @@ Rundeck Plugin   | &nbsp;
 ---------------- | ----
 Service type:    | `ResourceModelSource`
 Rundeck version: | 2.5+
-Version:         | 1.0.0
+Version:         | 1.1.0
 Description:     | Obtains nodes from OpenStack compute service
 
 ### Setup
-Download [plugin](https://github.com/alkersan/rundeck-openstack-plugin/releases) jar and put it to `$RDECK_BASE/libext`
+Download plugin jar from GitHub [releases](https://github.com/alkersan/rundeck-openstack-plugin/releases) and put it to `$RDECK_BASE/libext`
 
 ### Usage
 On project configuration tab add new `Resource Model Source` and select type `OpenStack`. You'll prompted to enter several mandatory parameters, specific to your `OpenStack` setup:
@@ -23,4 +23,6 @@ Parameter           | Description
  `Username`         | An `OpenStack` user who can do queries to `OpenStack Compute` service
  `Password`         | Password (or API Key) of previously mentioned user
  `Endpoint`         | URL of `OpenStack Keystone` service. Can be found in `Horizon > Access & Security > API Access` tab
- `Refresh interval` | How often the background fetcher should refresh server list (default 30s)
+ `Refresh interval` | How often the background fetcher should refresh server list (default `30s`)
+ `Tags separator`   | A character used to split instance meta-attribute named `tags` (if present) into Rundeck's tags (default `,`)<br>Technically it's a regex, so it's possible to set multiple separators like <code>,&#124;;&#124;##</code>
+
