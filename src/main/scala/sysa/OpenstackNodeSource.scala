@@ -14,6 +14,7 @@ import org.jclouds.openstack.nova.v2_0.domain.Address
 import org.jclouds.openstack.nova.v2_0.{NovaApiMetadata, NovaApi}
 
 import scala.collection.JavaConversions._
+import scala.collection.JavaConverters._
 
 
 class OpenstackNodeSource(val settings: OpenstackSettings) extends AbstractScheduledService with ResourceModelSource {
@@ -77,12 +78,13 @@ class OpenstackNodeSource(val settings: OpenstackSettings) extends AbstractSched
 							node.setAttribute("os_instance", server.getId)
 							node.setAttribute("os_region", region)
 							node.setAttribute("os_status", server.getStatus.toString)
-							if (server.getMetadata.contains("tags")) {
-								val tags_map = server.getMetadata.toMap
-								val tags = tags_map("tags").toString.split(",").map(_.trim())
-								node.setTags(setAsJavaSet(tags.toSet))
-							}
-							server.getMetadata.foreach { case (k, v) => node.setAttribute(k, v) }
+							server.getMetadata.filterKeys(_ != "tags").foreach { case (k, v) => node.setAttribute(k, v) }
+							val tags = server.getMetadata.getOrElse("tags", "")
+								.split(settings.tagsSeparator)
+								.map(_.trim)
+								.filterNot(_.isEmpty)
+								.toSet
+							if (tags.nonEmpty) node.setTags(tags.asJava)
 							newNodeSet.putNode(node)
 
 						case None =>

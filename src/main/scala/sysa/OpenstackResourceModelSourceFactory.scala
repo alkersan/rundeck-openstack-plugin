@@ -72,5 +72,12 @@ class OpenstackResourceModelSourceFactory(private val framework: Framework) exte
 				.description("Interval (in seconds) between refreshing nodes state")
 				.defaultValue("30")
 				.required(true))
+		.property(
+			PropertyBuilder.builder()
+				.string("tags-separator")
+				.title("Tags separator")
+				.description("A character used to split instance metadata attribute named `tags` (if present) into Rundeck tags")
+				.defaultValue(",")
+				.required(true))
 		.build
 }
