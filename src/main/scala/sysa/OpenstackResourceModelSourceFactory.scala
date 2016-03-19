@@ -9,28 +9,16 @@ import com.dtolabs.rundeck.core.resources.{ResourceModelSourceFactory, ResourceM
 import com.dtolabs.rundeck.plugins.ServiceNameConstants
 import com.dtolabs.rundeck.plugins.util.{PropertyBuilder, DescriptionBuilder}
 
-import scala.collection.JavaConversions._
-
 
 @Plugin(name = "openstack", service = ServiceNameConstants.ResourceModelSource)
 class OpenstackResourceModelSourceFactory(private val framework: Framework) extends ResourceModelSourceFactory with Describable {
 
-	override def createResourceModelSource(props: Properties): ResourceModelSource = {
-		val project = framework.getProjectManager.getFrameworkProject(props.getProperty("project"))
-		val currentSourceIDs = project
-			.listResourceModelConfigurations()
-			.filter(config => config.get("type") == "openstack")
-			.map(osConfig => osConfig.get("props").asInstanceOf[Properties].getProperty("id"))
-			.map(sourceId => s"${project.getName}-$sourceId")
-			.toSet
-
-		OpenstackNodeSource.removeUnusedSources(currentSourceIDs)
-		OpenstackNodeSource.apply(OpenstackSettings(props))
-	}
+	override def createResourceModelSource(props: Properties): ResourceModelSource =
+		new OpenstackNodeSource(OpenstackSettings(props))
 
 	override def getDescription = description
 
-	val description = DescriptionBuilder.builder
+	private val description = DescriptionBuilder.builder
 		.name("openstack")
 		.title("OpenStack")
 		.description("Obtains node definitions from OpenStack Compute service (aka Nova)")
@@ -38,7 +26,7 @@ class OpenstackResourceModelSourceFactory(private val framework: Framework) exte
 			PropertyBuilder.builder()
 				.string("id")
 				.title("Id")
-				.description("Uniquely identify this source")
+				.description("Uniquely identify this OpenStack source. Nodes retrieved from this source will be marked with `os_source_id` attribute")
 				.required(true))
 		.property(
 			PropertyBuilder.builder()
@@ -64,13 +52,6 @@ class OpenstackResourceModelSourceFactory(private val framework: Framework) exte
 				.string("endpoint")
 				.title("Endpoint")
 				.description("URL of OpenStack Identity service (aka Keystone)")
-				.required(true))
-		.property(
-			PropertyBuilder.builder()
-				.longType("refresh-interval")
-				.title("Refresh interval")
-				.description("Interval (in seconds) between refreshing nodes state")
-				.defaultValue("30")
 				.required(true))
 		.property(
 			PropertyBuilder.builder()

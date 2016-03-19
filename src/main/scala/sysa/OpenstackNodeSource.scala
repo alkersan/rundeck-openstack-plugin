@@ -1,41 +1,26 @@
 package sysa
 
 import java.util.Properties
-import java.util.concurrent.TimeUnit._
-import java.util.concurrent.atomic.AtomicReference
 
-import com.dtolabs.rundeck.core.common.{NodeEntryImpl, NodeSetImpl, INodeSet}
+import com.dtolabs.rundeck.core.common.{INodeSet, NodeEntryImpl, NodeSetImpl}
 import com.dtolabs.rundeck.core.resources.ResourceModelSource
-import com.google.common.util.concurrent.AbstractScheduledService
-import com.google.common.util.concurrent.AbstractScheduledService.Scheduler
 import org.apache.log4j.Logger
 import org.jclouds.ContextBuilder
 import org.jclouds.openstack.nova.v2_0.domain.Address
-import org.jclouds.openstack.nova.v2_0.{NovaApiMetadata, NovaApi}
+import org.jclouds.openstack.nova.v2_0.{NovaApi, NovaApiMetadata}
 
 import scala.collection.JavaConversions._
 import scala.collection.JavaConverters._
 
 
-class OpenstackNodeSource(val settings: OpenstackSettings) extends AbstractScheduledService with ResourceModelSource {
+class OpenstackNodeSource(private val settings: OpenstackSettings) extends ResourceModelSource {
 
-	val log = Logger.getLogger(s"${getClass.getName}-${settings.id}")
+	val log = Logger.getLogger(s"${getClass.getName}-${settings.sourceId}")
 
-	val nodeSet = new AtomicReference[INodeSet](new NodeSetImpl())
-
-	override def serviceName(): String = s"${getClass.getSimpleName}-${settings.id}"
-
-	override def scheduler() = Scheduler.newFixedRateSchedule(0, settings.refreshInterval, SECONDS)
-
-	override def startUp(): Unit = log.debug(s"Starting with refreshInterval: ${settings.refreshInterval}s")
-
-	override def shutDown(): Unit = log.debug(s"Stopping")
-
-	override def getNodes: INodeSet = nodeSet.get()
-
-	override def runOneIteration(): Unit = {
+	override def getNodes: INodeSet = {
 		log.debug(s"Fetching server list")
-		val newNodeSet = new NodeSetImpl()
+
+		val nodeSet = new NodeSetImpl()
 
 		val jcloudsProps = new Properties()
 		jcloudsProps.setProperty(org.jclouds.Constants.PROPERTY_CONNECTION_TIMEOUT, "5000")
@@ -73,9 +58,12 @@ class OpenstackNodeSource(val settings: OpenstackSettings) extends AbstractSched
 				serverApi.listInDetail.concat.foreach { server =>
 					server.getAddresses.values.find(nodeIpFindStrategy) match {
 						case Some(addr) =>
-							val node = new NodeEntryImpl(server.getName)
+							val node = new NodeEntryImpl()
+							node.setDescription(s"OpenStack node from '${settings.sourceId}' source")
+							node.setNodename(server.getName)
 							node.setHostname(addr.getAddr)
-							node.setAttribute("os_instance", server.getId)
+							node.setAttribute("os_source_id", settings.sourceId)
+							node.setAttribute("os_instance_id", server.getId)
 							node.setAttribute("os_region", region)
 							node.setAttribute("os_status", server.getStatus.toString)
 							server.getMetadata.filterKeys(_ != "tags").foreach { case (k, v) => node.setAttribute(k, v) }
@@ -85,7 +73,7 @@ class OpenstackNodeSource(val settings: OpenstackSettings) extends AbstractSched
 								.filterNot(_.isEmpty)
 								.toSet
 							if (tags.nonEmpty) node.setTags(tags.asJava)
-							newNodeSet.putNode(node)
+							nodeSet.putNode(node)
 
 						case None =>
 					}
@@ -98,31 +86,8 @@ class OpenstackNodeSource(val settings: OpenstackSettings) extends AbstractSched
 			if (novaApi != null) novaApi.close()
 		}
 
-		log.debug(s"Fetched #${newNodeSet.size} entries")
-		nodeSet.set(newNodeSet)
-	}
+		log.debug(s"Fetched #${nodeSet.size} entries")
 
-}
-
-object OpenstackNodeSource {
-
-	private var sources = Map.empty[String, OpenstackNodeSource]
-
-	def apply(settings: OpenstackSettings): ResourceModelSource = this.synchronized {
-		if (!sources.contains(settings.id) || sources(settings.id).settings != settings) {
-			sources.get(settings.id).foreach(_.stopAsync())
-			val newSource = new OpenstackNodeSource(settings)
-			sources = sources.updated(settings.id, newSource)
-			newSource.startAsync()
-			newSource
-		} else {
-			sources(settings.id)
-		}
-	}
-
-	def removeUnusedSources(currentSourceIDs: Set[String]): Unit = this.synchronized {
-		val removedSources = sources.keySet.diff(currentSourceIDs)
-		removedSources.foreach { id => sources(id).stopAsync() }
-		sources = sources -- removedSources
+		nodeSet
 	}
 }
