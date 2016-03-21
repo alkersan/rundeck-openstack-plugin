@@ -7,7 +7,7 @@ Rundeck Plugin   | &nbsp;
 ---------------- | ----
 Service type:    | `ResourceModelSource`
 Rundeck version: | 2.6.3
-Version:         | 1.2.0
+Version:         | 1.2.1
 Description:     | Obtains nodes from OpenStack compute service
 
 ### Setup
@@ -16,11 +16,12 @@ Download plugin jar from GitHub [releases](https://github.com/alkersan/rundeck-o
 ### Usage
 On project configuration tab add new `Resource Model Source` and select type `OpenStack`. You'll prompted to enter several mandatory parameters, specific to your `OpenStack` setup:
 
-Parameter           | Description
-------------------- | -----------
- `Id`               | Used to distinguish node sources of same type in one Rundeck project
- `Tenant`           | Name of a Tenant (aka Project) in `OpenStack`
- `Username`         | An `OpenStack` user who can do queries to `OpenStack Compute` service
- `Password`         | Password (or API Key) of previously mentioned user
- `Endpoint`         | URL of `OpenStack Keystone` service. Can be found in `Horizon > Access & Security > API Access` tab
- `Tags separator`   | A character used to split instance meta-attribute named `tags` (if present) into Rundeck's tags (default `,`)<br>Technically it's a regex, so it's possible to set multiple separators like <code>,&#124;;&#124;##</code>
+Parameter              | Description
+---------------------- | -----------
+ `Id`                  | Used to distinguish node sources of same type in one Rundeck project
+ `Tenant`              | Name of a Tenant (aka Project) in `OpenStack`
+ `Username`            | An `OpenStack` user who can do queries to `OpenStack Compute` service
+ `Password`            | Password (or API Key) of previously mentioned user
+ `Endpoint`            | URL of `OpenStack Keystone` service. Can be found in `Horizon > Access & Security > API Access` tab
+ `Tags separator`      | A character used to split instance meta-attribute named `tags` (if present) into Rundeck's tags (default `,`)<br>Technically it's a regex, so it's possible to set multiple separators like <code>,&#124;;&#124;##</code>
+ `Include server node` | Add self to resulting node-set
