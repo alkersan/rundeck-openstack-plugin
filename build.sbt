@@ -3,7 +3,7 @@ lazy val root = project.in(file("."))
 	.settings(
 		name := "rundeck-openstack-plugin",
 		organization := "io.sysa",
-		version := "1.2.0",
+		version := "1.2.1",
 		scalaVersion := "2.11.8",
 		scalacOptions += "-target:jvm-1.7",
 

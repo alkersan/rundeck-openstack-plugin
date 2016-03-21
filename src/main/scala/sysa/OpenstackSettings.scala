@@ -2,7 +2,7 @@ package sysa
 
 import java.util.Properties
 
-case class OpenstackSettings(sourceId: String, tenant: String, username: String, password: String, endpoint: String, tagsSeparator: String)
+case class OpenstackSettings(sourceId: String, tenant: String, username: String, password: String, endpoint: String, tagsSeparator: String, includeServerNode: Boolean)
 
 object OpenstackSettings {
 	def apply(props: Properties): OpenstackSettings = new OpenstackSettings(
@@ -11,6 +11,7 @@ object OpenstackSettings {
 		username = props.getProperty("username"),
 		password = props.getProperty("password"),
 		endpoint = props.getProperty("endpoint"),
-		tagsSeparator = props.getProperty("tags-separator", ",")
+		tagsSeparator = props.getProperty("tags-separator", ","),
+		includeServerNode = props.getProperty("include-server-node", "false").toBoolean
 	)
 }

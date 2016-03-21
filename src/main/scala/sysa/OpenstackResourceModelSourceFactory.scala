@@ -14,7 +14,7 @@ import com.dtolabs.rundeck.plugins.util.{PropertyBuilder, DescriptionBuilder}
 class OpenstackResourceModelSourceFactory(private val framework: Framework) extends ResourceModelSourceFactory with Describable {
 
 	override def createResourceModelSource(props: Properties): ResourceModelSource =
-		new OpenstackNodeSource(OpenstackSettings(props))
+		new OpenstackNodeSource(framework, OpenstackSettings(props))
 
 	override def getDescription = description
 
@@ -60,5 +60,12 @@ class OpenstackResourceModelSourceFactory(private val framework: Framework) exte
 				.description("A character used to split instance metadata attribute named `tags` (if present) into Rundeck tags")
 				.defaultValue(",")
 				.required(true))
+		.property(
+			PropertyBuilder.builder()
+				.booleanType("include-server-node")
+				.title("Include server node")
+				.description("Automatically include this Rundeck server node to resulting node-set?")
+				.required(true)
+			  .defaultValue("false"))
 		.build
 }

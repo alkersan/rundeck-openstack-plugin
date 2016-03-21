@@ -2,7 +2,7 @@ package sysa
 
 import java.util.Properties
 
-import com.dtolabs.rundeck.core.common.{INodeSet, NodeEntryImpl, NodeSetImpl}
+import com.dtolabs.rundeck.core.common.{Framework, INodeSet, NodeEntryImpl, NodeSetImpl}
 import com.dtolabs.rundeck.core.resources.ResourceModelSource
 import org.apache.log4j.Logger
 import org.jclouds.ContextBuilder
@@ -13,7 +13,7 @@ import scala.collection.JavaConversions._
 import scala.collection.JavaConverters._
 
 
-class OpenstackNodeSource(private val settings: OpenstackSettings) extends ResourceModelSource {
+class OpenstackNodeSource(private val framework: Framework, private val settings: OpenstackSettings) extends ResourceModelSource {
 
 	val log = Logger.getLogger(s"${getClass.getName}-${settings.sourceId}")
 
@@ -87,6 +87,10 @@ class OpenstackNodeSource(private val settings: OpenstackSettings) extends Resou
 		}
 
 		log.debug(s"Fetched #${nodeSet.size} entries")
+
+		if (settings.includeServerNode) {
+			nodeSet.putNode(framework.createFrameworkNode())
+		}
 
 		nodeSet
 	}
